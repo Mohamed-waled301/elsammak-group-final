@@ -58,32 +58,26 @@ const AuthPage = () => {
  setError('');
 
  try {
- if (mode === 'login') {
- if (formData.email.includes('new') && formData.role === 'client') {
- setMode('register');
- setError(isRTL ? 'الحساب غير موجود، يرجى استكمال البيانات لإنشاء حساب جديد' : 'Account not found. Please complete details to register.');
- } else if (formData.email && formData.password) {
- if (formData.role === 'admin') {
-   const res = await apiLogin({ email: formData.email, password: formData.password, mode: 'admin' });
-   if (res.success && res.token) {
-     login(res.token, { name: 'Admin', email: formData.email, role: 'admin' });
-     navigate('/admin/dashboard');
-   } else {
-     throw new Error(isRTL ? 'بيانات المسؤول غير صحيحة' : 'Invalid Admin credentials');
-   }
- } else {
-   const res = await apiLogin({ email: formData.email, password: formData.password });
-   if (res.success && res.token) {
-     const userRes = await getMe(res.token);
-     const verifiedUser = userRes.data.user;
-     login(res.token, { ...verifiedUser, role: verifiedUser.role === 'user' ? 'client' : verifiedUser.role });
-     navigate('/');
-   } else {
-     throw new Error('Login failed');
-   }
- }
- }
- } else if (mode === 'register') {
+    if (mode === 'login') {
+      const email = formData.email.trim();
+      const password = formData.password;
+
+      // Temporary frontend-only login (no backend calls).
+      if (!email || !password) return;
+
+      const token = `mock_token_${Date.now()}`;
+      const role = formData.role;
+
+      localStorage.setItem('user', JSON.stringify({ email }));
+      login(token, { name: role === 'admin' ? 'Admin' : email, email, role });
+
+      if (role === 'admin') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/');
+      }
+      return;
+    } else if (mode === 'register') {
  if (!validateNationalId(formData.nationalId)) {
  throw new Error(isRTL ? 'الرقم القومي يجب أن يكون 14 رقماً بالضبط' : 'National ID must be exactly 14 digits');
  }
@@ -121,6 +115,8 @@ const AuthPage = () => {
  }
  }
     } catch (err: any) {
+    // For the mock login, we always return early above.
+    // Keep existing error handling for register/otp/forgot-password flows.
     // Provide an actionable error message instead of generic "Network Error"
     if (axios.isAxiosError(err)) {
       if (err.response) {
