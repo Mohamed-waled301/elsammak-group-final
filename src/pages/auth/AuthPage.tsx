@@ -122,40 +122,41 @@ const AuthPage = () => {
     await w.emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, form, PUBLIC_KEY);
   };
 
-  // Reset password email MUST use emailjs.send() with params (not sendForm)
+  // Reset password email: REQUIRED to use emailjs.send() only (no sendForm)
   const sendResetEmail = async (email: string) => {
-    const token = Math.random().toString(36).substring(2);
-    localStorage.setItem('reset_' + email, token);
-
-    const resetLink =
-      window.location.origin +
-      '/reset-password?token=' +
-      encodeURIComponent(token) +
-      '&email=' +
-      encodeURIComponent(email);
-
-    const templateParams = {
-      name: email,
-      email,
-      message: `رابط إعادة تعيين كلمة المرور:\n${resetLink}`,
-    };
-
-    // Debug (production support)
-    // eslint-disable-next-line no-console
-    console.log('Sending email with:', templateParams);
-
-    if (!isEmailJsConfigured) {
-      // eslint-disable-next-line no-console
-      console.error('EmailJS is not configured. Check TEMPLATE_ID / PUBLIC_KEY (env or constants).');
-      throw new Error(isRTL ? 'خدمة البريد غير مهيأة حالياً' : 'Email service is not configured');
-    }
-
     try {
-      await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY);
+      const token = Math.random().toString(36).substring(2);
+
+      localStorage.setItem('reset_' + email, token);
+
+      const resetLink =
+        window.location.origin +
+        '/reset-password?token=' +
+        token +
+        '&email=' +
+        email;
+
+      const templateParams = {
+        name: email,
+        email: email,
+        message: 'رابط إعادة تعيين كلمة المرور:\n' + resetLink,
+      };
+
+      // eslint-disable-next-line no-console
+      console.log('Sending email:', templateParams);
+
+      // CRITICAL: You must set REAL values here (or via env and replace these constants).
+      // I cannot guess these for you.
+      const REAL_TEMPLATE_ID = TEMPLATE_ID; // e.g. "template_abcd123"
+      const REAL_PUBLIC_KEY = PUBLIC_KEY; // e.g. "user_xxxxx" / "public_xxxxx"
+
+      await emailjs.send('service_pim0kkq', REAL_TEMPLATE_ID, templateParams, REAL_PUBLIC_KEY);
+
+      alert(isRTL ? 'تم إرسال الرابط بنجاح' : 'Reset link sent successfully');
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error('EmailJS error:', error);
-      throw error;
+      console.error('EmailJS ERROR:', error);
+      alert(isRTL ? 'فشل في إرسال الرابط' : 'Failed to send reset link');
     }
   };
 
@@ -280,12 +281,7 @@ const AuthPage = () => {
         if (formData.email) {
           const email = formData.email.trim();
 
-          try {
-            await sendResetEmail(email);
-            alert(isRTL ? 'تم إرسال رابط إعادة التعيين على البريد الإلكتروني' : 'Reset link sent to your email.');
-          } catch {
-            alert(isRTL ? 'فشل في إرسال الرابط' : 'Failed to send reset link');
-          }
+          await sendResetEmail(email);
 
           setMode('login');
           setError('');
