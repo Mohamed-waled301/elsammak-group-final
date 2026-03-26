@@ -1,13 +1,50 @@
+import { useEffect, useRef, useState } from 'react';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Button from '../components/Button';
 
 const Contact = () => {
- const { t } = useTranslation();
+ const { t, i18n } = useTranslation();
+ const isRTL = i18n.language === 'ar';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const formRef = useRef<HTMLFormElement | null>(null);
+  const [isSending, setIsSending] = useState(false);
+
+  const SERVICE_ID = 'service_pim0kkq';
+  const TEMPLATE_ID = (import.meta as any).env?.VITE_EMAILJS_TEMPLATE_ID || '[PUT YOUR TEMPLATE ID HERE]';
+  const PUBLIC_KEY = (import.meta as any).env?.VITE_EMAILJS_PUBLIC_KEY || '[PUT YOUR PUBLIC KEY HERE]';
+
+  useEffect(() => {
+    // Load EmailJS in production without relying on any backend.
+    const w = window as any;
+    if (w.emailjs) return;
+
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js';
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Form submission ready for backend integration.');
+    if (!formRef.current) return;
+
+    const w = window as any;
+    if (!w.emailjs?.sendForm) {
+      alert('تعذر إرسال الرسالة حالياً. يرجى المحاولة لاحقاً.');
+      return;
+    }
+
+    setIsSending(true);
+    try {
+      await w.emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current, PUBLIC_KEY);
+      alert('تم إرسال رسالتك بنجاح.');
+    } catch (err) {
+      console.error('EmailJS error:', err);
+      alert('تعذر إرسال الرسالة. يرجى المحاولة لاحقاً.');
+    } finally {
+      setIsSending(false);
+    }
   };
 
  return (
@@ -22,15 +59,29 @@ const Contact = () => {
  {/* Form */}
  <div className="bg-gray-50 p-8 md:p-12 rounded-3xl border border-gray-100 shadow-sm transition-colors">
  <h2 className="text-3xl font-bold text-[var(--color-primary)] mb-8 transition-colors">{t('contact.send_msg')}</h2>
- <form onSubmit={handleSubmit} className="space-y-6">
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div>
  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2 transition-colors">{t('contact.full_name')}</label>
- <input type="text" id="name" className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--color-gold)] focus:border-transparent outline-none transition-all shadow-sm hover:border-gray-300 " placeholder="John Doe" required />
+              <input
+                type="text"
+                id="name"
+                name="name"
+                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--color-gold)] focus:border-transparent outline-none transition-all shadow-sm hover:border-gray-300 "
+                placeholder="John Doe"
+                required
+              />
  </div>
  <div>
  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2 transition-colors">{t('contact.email')}</label>
- <input type="email" id="email" className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--color-gold)] focus:border-transparent outline-none transition-all shadow-sm hover:border-gray-300 " placeholder="john@company.com" required />
+              <input
+                type="email"
+                id="email"
+                name="email"
+                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--color-gold)] focus:border-transparent outline-none transition-all shadow-sm hover:border-gray-300 "
+                placeholder="john@company.com"
+                required
+              />
  </div>
  </div>
  <div>
@@ -45,9 +96,23 @@ const Contact = () => {
  </div>
  <div>
  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2 transition-colors">{t('contact.message')}</label>
- <textarea id="message" rows={5} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--color-gold)] focus:border-transparent outline-none transition-all resize-none shadow-sm hover:border-gray-300 " placeholder="..." required></textarea>
+            <textarea
+              id="message"
+              name="message"
+              rows={5}
+              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--color-gold)] focus:border-transparent outline-none transition-all resize-none shadow-sm hover:border-gray-300 "
+              placeholder="..."
+              required
+            ></textarea>
  </div>
- <Button type="submit" variant="primary" className="w-full py-4 text-lg shadow-lg hover:-translate-y-1 mt-4">{t('contact.send_btn')}</Button>
+          <Button
+            type="submit"
+            variant="primary"
+            className="w-full py-4 text-lg shadow-lg hover:-translate-y-1 mt-4"
+            disabled={isSending}
+          >
+            {isSending ? (isRTL ? 'جاري الإرسال...' : 'Sending...') : t('contact.send_btn')}
+          </Button>
  </form>
  </div>
 
