@@ -77,35 +77,56 @@ const AuthPage = () => {
 
   // Reusable EmailJS function (OTP + Reset Password)
   const sendEmail = async (email: string, message: string, name = 'El-Samak Group') => {
-    try {
+    const user = { name, email };
+    const finalMessage = message || 'Test message';
+
+    // eslint-disable-next-line no-console
+    console.log('Sending Email:', {
+      service: import.meta.env.VITE_EMAILJS_SERVICE_ID,
+      template: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+      publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+      email,
+      message: finalMessage,
+    });
+
+    if (
+      !isEmailJsConfigured ||
+      !import.meta.env.VITE_EMAILJS_SERVICE_ID ||
+      !import.meta.env.VITE_EMAILJS_TEMPLATE_ID ||
+      !import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+    ) {
       // eslint-disable-next-line no-console
-      console.log('Email before sending:', email);
+      console.error('EmailJS Error:', 'Missing required EmailJS environment variables');
+      return false;
+    }
 
-      if (!isEmailJsConfigured) {
-        // eslint-disable-next-line no-console
-        console.error('EMAIL FAILED: Missing VITE_EMAILJS_PUBLIC_KEY');
-        return false;
-      }
+    if (!email) {
+      // eslint-disable-next-line no-console
+      console.error('EmailJS Error:', 'Missing user email');
+      return false;
+    }
 
-      const response = await emailjs.send(
+    return emailjs
+      .send(
         import.meta.env.VITE_EMAILJS_SERVICE_ID,
         import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
         {
-          email,
-          message,
-          name,
+          name: user.name || 'User',
+          email: user.email,
+          message: finalMessage,
         },
         import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
-      );
-
-      // eslint-disable-next-line no-console
-      console.log('EMAIL SENT SUCCESS:', response);
-      return true;
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('EMAIL FAILED:', error);
-      return false;
-    }
+      )
+      .then(() => {
+        // eslint-disable-next-line no-console
+        console.log('SUCCESS: Email sent');
+        return true;
+      })
+      .catch((err) => {
+        // eslint-disable-next-line no-console
+        console.error('ERROR sending email:', err);
+        return false;
+      });
   };
 
   // OTP helpers (generation + send + verify)

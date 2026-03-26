@@ -11,15 +11,11 @@ const Contact = () => {
   const formRef = useRef<HTMLFormElement | null>(null);
   const [isSending, setIsSending] = useState(false);
 
-  const SERVICE_ID = 'service_pim0kkq';
-  const TEMPLATE_ID = (import.meta as any).env?.VITE_EMAILJS_TEMPLATE_ID || '[PUT YOUR TEMPLATE ID HERE]';
-  const PUBLIC_KEY = (import.meta as any).env?.VITE_EMAILJS_PUBLIC_KEY || '[PUT YOUR PUBLIC KEY HERE]';
+  const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
+  const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '';
+  const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
   const isEmailJsConfigured =
-    Boolean(SERVICE_ID) &&
-    Boolean(TEMPLATE_ID) &&
-    Boolean(PUBLIC_KEY) &&
-    !String(TEMPLATE_ID).includes('PUT YOUR') &&
-    !String(PUBLIC_KEY).includes('PUT YOUR');
+    Boolean(SERVICE_ID) && Boolean(TEMPLATE_ID) && Boolean(PUBLIC_KEY);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,11 +28,50 @@ const Contact = () => {
 
     setIsSending(true);
     try {
-      // Keep existing functionality: send the form with EmailJS, but via @emailjs/browser
-      await emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current, PUBLIC_KEY);
+      const formData = new FormData(formRef.current);
+      const name = String(formData.get('name') || 'User').trim();
+      const email = String(formData.get('email') || '').trim();
+      const message = String(formData.get('message') || '').trim();
+      const finalMessage = message || 'Test message';
+      const user = { name, email };
+
+      if (!email || !message) {
+        alert('تعذر إرسال الرسالة حالياً. يرجى إدخال البيانات المطلوبة.');
+        return;
+      }
+
+      // eslint-disable-next-line no-console
+      console.log('Sending Email:', {
+        service: import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        template: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+        email,
+        message: finalMessage,
+      });
+
+      await emailjs
+        .send(
+          import.meta.env.VITE_EMAILJS_SERVICE_ID,
+          import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+          {
+            name: user.name || 'User',
+            email: user.email,
+            message: finalMessage,
+          },
+          import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+        )
+        .then(() => {
+          // eslint-disable-next-line no-console
+          console.log('SUCCESS: Email sent');
+        })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error('ERROR sending email:', error);
+          throw error;
+        });
       alert('تم إرسال رسالتك بنجاح.');
     } catch (err) {
-      console.error('EmailJS error:', err);
+      console.error('EmailJS Error:', err);
       alert('تعذر إرسال الرسالة. يرجى المحاولة لاحقاً.');
     } finally {
       setIsSending(false);
