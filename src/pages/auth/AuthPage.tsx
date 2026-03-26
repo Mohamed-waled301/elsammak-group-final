@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Mail, Lock, User, Phone, CreditCard, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import LocationSelect from '../../components/LocationSelect';
+import emailjs from 'emailjs-com';
 
 type AuthMode = 'login' | 'register' | 'otp' | 'forgot-password';
 
@@ -121,6 +122,31 @@ const AuthPage = () => {
     await w.emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, form, PUBLIC_KEY);
   };
 
+  // Reset password email MUST use emailjs.send() with params (not sendForm)
+  const sendResetEmail = async (email: string) => {
+    const token = Math.random().toString(36).substring(2);
+    localStorage.setItem('reset_' + email, token);
+
+    const resetLink =
+      window.location.origin +
+      '/reset-password?token=' +
+      encodeURIComponent(token) +
+      '&email=' +
+      encodeURIComponent(email);
+
+    const templateParams = {
+      name: email,
+      email,
+      message: `رابط إعادة تعيين كلمة المرور:\n${resetLink}`,
+    };
+
+    if (!isEmailJsConfigured) {
+      throw new Error(isRTL ? 'خدمة البريد غير مهيأة حالياً' : 'Email service is not configured');
+    }
+
+    await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
  e.preventDefault();
  setLoading(true);
@@ -137,14 +163,19 @@ const AuthPage = () => {
         }
 
         const storedPassword = localStorage.getItem('user_' + email);
-        const verified = localStorage.getItem('verified_' + email) === 'true';
+        const verified = localStorage.getItem('verified_' + email);
 
-        if (!storedPassword || storedPassword !== password) {
-          setError(isRTL ? 'بيانات الدخول غير صحيحة' : 'Invalid credentials');
+        if (!storedPassword) {
+          setError(isRTL ? 'الحساب غير موجود' : 'Account not found');
           return;
         }
 
-        if (!verified) {
+        if (storedPassword !== password) {
+          setError(isRTL ? 'كلمة المرور غير صحيحة' : 'Incorrect password');
+          return;
+        }
+
+        if (!verified || verified !== 'true') {
           setError(isRTL ? 'يرجى تأكيد البريد الإلكتروني' : 'Please verify your email');
           return;
         }
@@ -156,6 +187,7 @@ const AuthPage = () => {
         login(token, { name: role === 'admin' ? 'Admin' : savedName, email, role });
 
         setError('');
+        // App routing: admin -> /admin/dashboard, client -> /
         navigate(role === 'admin' ? '/admin/dashboard' : '/');
         return;
       }
@@ -235,21 +267,12 @@ const AuthPage = () => {
       if (mode === 'forgot-password') {
         if (formData.email) {
           const email = formData.email.trim();
-          const token = Math.random().toString(36).substring(2);
-
-          localStorage.setItem('reset_' + email, token);
-          const link =
-            window.location.origin +
-            '/reset-password?token=' +
-            encodeURIComponent(token) +
-            '&email=' +
-            encodeURIComponent(email);
 
           try {
-            await sendEmail({ name: email, email, message: link });
-            alert(isRTL ? 'تم إرسال رابط إعادة تعيين كلمة المرور بنجاح.' : 'Reset link sent successfully.');
+            await sendResetEmail(email);
+            alert(isRTL ? 'تم إرسال رابط إعادة التعيين على البريد الإلكتروني' : 'Reset link sent to your email.');
           } catch {
-            alert(isRTL ? 'تعذر إرسال رابط إعادة التعيين. يرجى المحاولة لاحقاً.' : 'Failed to send reset link. Try again.');
+            alert(isRTL ? 'فشل في إرسال الرابط' : 'Failed to send reset link');
           }
 
           setMode('login');
