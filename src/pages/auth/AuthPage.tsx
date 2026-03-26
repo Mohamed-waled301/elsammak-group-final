@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -50,6 +50,56 @@ const AuthPage = () => {
  return /^\d{14}$/.test(id);
  };
 
+  // EmailJS (frontend-only)
+  const SERVICE_ID = 'service_pim0kkq';
+  const TEMPLATE_ID =
+    (import.meta as any).env?.VITE_EMAILJS_TEMPLATE_ID || '[PUT YOUR TEMPLATE ID HERE]';
+  const PUBLIC_KEY =
+    (import.meta as any).env?.VITE_EMAILJS_PUBLIC_KEY || '[PUT YOUR PUBLIC KEY HERE]';
+
+  const emailFormRef = useRef<HTMLFormElement | null>(null);
+  const [emailJsReady, setEmailJsReady] = useState(false);
+
+  useEffect(() => {
+    const w = window as any;
+    if (w.emailjs?.sendForm) {
+      setEmailJsReady(true);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js';
+    script.async = true;
+    script.onload = () => {
+      const ww = window as any;
+      setEmailJsReady(Boolean(ww.emailjs?.sendForm));
+    };
+    document.body.appendChild(script);
+  }, []);
+
+  const sendEmail = async (payload: { name: string; email: string; message: string }) => {
+    const w = window as any;
+    if (!w.emailjs?.sendForm || !emailFormRef.current) {
+      throw new Error('EmailJS not ready');
+    }
+
+    // EmailJS reads form fields by their `name` attribute.
+    const form = emailFormRef.current;
+    const setField = (fieldName: string, value: string) => {
+      const el = form.querySelector(`input[name="${fieldName}"], textarea[name="${fieldName}"]`) as
+        | HTMLInputElement
+        | HTMLTextAreaElement
+        | null;
+      if (el) el.value = value;
+    };
+
+    setField('name', payload.name);
+    setField('email', payload.email);
+    setField('message', payload.message);
+
+    await w.emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, form, PUBLIC_KEY);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
  e.preventDefault();
  setLoading(true);
@@ -65,12 +115,24 @@ const AuthPage = () => {
           return;
         }
 
-        // Frontend-only mock login (no backend calls).
+        const storedPassword = localStorage.getItem('user_' + email);
+        const verified = localStorage.getItem('verified_' + email) === 'true';
+
+        if (!storedPassword || storedPassword !== password) {
+          setError(isRTL ? 'بيانات الدخول غير صحيحة' : 'Invalid credentials');
+          return;
+        }
+
+        if (!verified) {
+          setError(isRTL ? 'يرجى تأكيد البريد الإلكتروني' : 'Please verify your email');
+          return;
+        }
+
         const token = `mock_token_${Date.now()}`;
         const role = formData.role;
+        const savedName = localStorage.getItem('name_' + email) || email;
 
-        localStorage.setItem('user', JSON.stringify({ email }));
-        login(token, { name: role === 'admin' ? 'Admin' : email, email, role });
+        login(token, { name: role === 'admin' ? 'Admin' : savedName, email, role });
 
         setError('');
         navigate(role === 'admin' ? '/admin/dashboard' : '/');
@@ -95,10 +157,24 @@ const AuthPage = () => {
           throw new Error(isRTL ? 'يرجى اختيار المحافظة والمدينة' : 'Please select Governorate and City');
         }
 
-        // Simulate registration success and move to OTP step.
-        setMode('otp');
-        setError('');
-        return;
+        // Generate OTP and send email via EmailJS.
+        const email = formData.email.trim();
+        const otp = String(Math.floor(100000 + Math.random() * 900000));
+
+        localStorage.setItem('otp_' + email, otp);
+        localStorage.setItem('pending_pass_' + email, formData.password);
+        localStorage.setItem('name_' + email, formData.name);
+
+        try {
+          await sendEmail({ name: formData.name, email, message: otp });
+          alert(isRTL ? 'تم إرسال كود التفعيل إلى بريدك الإلكتروني بنجاح.' : 'OTP sent successfully.');
+          setMode('otp');
+          setError('');
+          return;
+        } catch {
+          alert(isRTL ? 'تعذر إرسال كود التفعيل. يرجى المحاولة لاحقاً.' : 'Failed to send OTP. Please try again later.');
+          return;
+        }
       }
 
       if (mode === 'otp') {
@@ -107,20 +183,48 @@ const AuthPage = () => {
           throw new Error(isRTL ? 'رمز التفعيل غير صالح' : 'Invalid OTP code');
         }
 
-        // Simulate OTP verification success.
-        const token = `mock_token_${Date.now()}`;
-        const role = formData.role;
-        login(token, { name: role === 'admin' ? 'Admin' : formData.email, email: formData.email, role });
+        const email = formData.email.trim();
+        const storedOtp = localStorage.getItem('otp_' + email);
 
+        if (!storedOtp || storedOtp !== otpValue) {
+          setError(isRTL ? 'رمز التفعيل غير صحيح' : 'Invalid OTP');
+          return;
+        }
+
+        const pendingPass = localStorage.getItem('pending_pass_' + email) || formData.password;
+        localStorage.setItem('user_' + email, pendingPass);
+        localStorage.setItem('verified_' + email, 'true');
+        localStorage.removeItem('otp_' + email);
+        localStorage.removeItem('pending_pass_' + email);
+
+        alert(isRTL ? 'تم تأكيد البريد الإلكتروني بنجاح. يمكنك تسجيل الدخول الآن.' : 'Email verified. You can log in now.');
+        setMode('login');
         setError('');
-        navigate(role === 'admin' ? '/admin/dashboard' : '/');
         return;
       }
 
       if (mode === 'forgot-password') {
         if (formData.email) {
+          const email = formData.email.trim();
+          const token = Math.random().toString(36).substring(2);
+
+          localStorage.setItem('reset_' + email, token);
+          const link =
+            window.location.origin +
+            '/reset-password?token=' +
+            encodeURIComponent(token) +
+            '&email=' +
+            encodeURIComponent(email);
+
+          try {
+            await sendEmail({ name: email, email, message: link });
+            alert(isRTL ? 'تم إرسال رابط إعادة تعيين كلمة المرور بنجاح.' : 'Reset link sent successfully.');
+          } catch {
+            alert(isRTL ? 'تعذر إرسال رابط إعادة التعيين. يرجى المحاولة لاحقاً.' : 'Failed to send reset link. Try again.');
+          }
+
           setMode('login');
-          setError(isRTL ? 'تم إرسال رابط إعادة التعيين إلى بريدك الإلكتروني' : 'Reset link sent to your email');
+          setError('');
         }
         return;
       }
@@ -293,6 +397,13 @@ const AuthPage = () => {
  )}
  </div>
  </form>
+
+      {/* Hidden form for EmailJS sendForm() */}
+      <form ref={emailFormRef} className="hidden" aria-hidden="true">
+        <input name="name" type="text" defaultValue="" />
+        <input name="email" type="email" defaultValue="" />
+        <textarea name="message" defaultValue="" />
+      </form>
  </div>
  );
 };

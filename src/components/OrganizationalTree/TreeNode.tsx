@@ -24,10 +24,11 @@ function TreeNode({ node, depth, isExpanded, onToggle }: TreeNodeProps) {
   const hasBio = Boolean(node.bio?.ar);
   const hasName = Boolean(node.name?.ar);
   const isExpandable = hasChildren || hasBio;
-  const isChairman = node.id === 'chairman';
-  const isStaticNode = !isChairman;
-  const shouldShowChildren = hasChildren && (!isChairman || isExpanded);
-  const showBioPanel = isChairman && hasBio && isExpanded;
+  const interactiveIds = new Set(['chairman', 'exec', 'admin']);
+  const isInteractive = interactiveIds.has(node.id);
+  const isStaticNode = !isInteractive;
+  const shouldShowChildren = node.id === 'board' ? hasChildren : hasChildren && isExpanded;
+  const showBioPanel = isInteractive && hasBio && isExpanded;
   const imageByNodeId: Record<string, string> = {
     chairman: '/images/waleed.jpg.jpeg',
     exec: '/images/wael.jpg.jpeg',
@@ -42,7 +43,7 @@ function TreeNode({ node, depth, isExpanded, onToggle }: TreeNodeProps) {
   }, [node.id]);
 
   const handleClick = () => {
-    if (isChairman && isExpandable) onToggle();
+    if (isInteractive && isExpandable) onToggle();
   };
 
   return (

@@ -18,6 +18,7 @@ import OrganizationStructure from './pages/OrganizationStructure';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ClientDetails from './pages/admin/ClientDetails';
 import AdminProfile from './pages/admin/AdminProfile';
+import ResetPassword from './pages/ResetPassword';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) => {
@@ -62,6 +63,15 @@ function AppRoutes() {
  </ProtectedRoute>
  }
  />
+
+  <Route
+    path="/reset-password"
+    element={
+      <AuthLayout>
+        <ResetPassword />
+      </AuthLayout>
+    }
+  />
 
  <Route
  path="/*"
