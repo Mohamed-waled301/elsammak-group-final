@@ -24,7 +24,10 @@ function TreeNode({ node, depth, isExpanded, onToggle }: TreeNodeProps) {
   const hasBio = Boolean(node.bio?.ar);
   const hasName = Boolean(node.name?.ar);
   const isExpandable = hasChildren || hasBio;
-  const isStaticNode = !isExpandable;
+  const isChairman = node.id === 'chairman';
+  const isStaticNode = !isChairman;
+  const shouldShowChildren = hasChildren && (!isChairman || isExpanded);
+  const showBioPanel = isChairman && hasBio && isExpanded;
   const imageByNodeId: Record<string, string> = {
     chairman: '/images/waleed.jpg.jpeg',
     exec: '/images/wael.jpg.jpeg',
@@ -39,7 +42,7 @@ function TreeNode({ node, depth, isExpanded, onToggle }: TreeNodeProps) {
   }, [node.id]);
 
   const handleClick = () => {
-    if (isExpandable) onToggle();
+    if (isChairman && isExpandable) onToggle();
   };
 
   return (
@@ -70,7 +73,7 @@ function TreeNode({ node, depth, isExpanded, onToggle }: TreeNodeProps) {
       )}
 
       <AnimatePresence initial={false}>
-        {hasChildren && isExpanded && (
+        {shouldShowChildren && (
           <motion.ul
             className="org-tree-level"
             initial={{ opacity: 0, height: 0, y: -8 }}
@@ -84,7 +87,7 @@ function TreeNode({ node, depth, isExpanded, onToggle }: TreeNodeProps) {
       </AnimatePresence>
 
       <AnimatePresence initial={false}>
-        {hasBio && isExpanded && (
+        {showBioPanel && (
           <motion.div
             className="org-node-bio-panel"
             initial={{ opacity: 0, height: 0, y: -6 }}

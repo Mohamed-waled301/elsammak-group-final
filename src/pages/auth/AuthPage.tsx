@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Mail, Lock, User, Phone, CreditCard, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import LocationSelect from '../../components/LocationSelect';
-import { login as apiLogin, register as apiRegister, verifyOTP as apiVerifyOTP, forgotPassword as apiForgotPassword, getMe } from '../../api/auth';
 
 type AuthMode = 'login' | 'register' | 'otp' | 'forgot-password';
 
@@ -58,82 +56,76 @@ const AuthPage = () => {
  setError('');
 
  try {
-    if (mode === 'login') {
-      const email = formData.email.trim();
-      const password = formData.password;
+      if (mode === 'login') {
+        const email = formData.email.trim();
+        const password = formData.password;
 
-      // Temporary frontend-only login (no backend calls).
-      if (!email || !password) return;
+        if (!email || !password) {
+          setError(isRTL ? 'يرجى إدخال البريد الإلكتروني وكلمة المرور' : 'Please enter email and password');
+          return;
+        }
 
-      const token = `mock_token_${Date.now()}`;
-      const role = formData.role;
+        // Frontend-only mock login (no backend calls).
+        const token = `mock_token_${Date.now()}`;
+        const role = formData.role;
 
-      localStorage.setItem('user', JSON.stringify({ email }));
-      login(token, { name: role === 'admin' ? 'Admin' : email, email, role });
+        localStorage.setItem('user', JSON.stringify({ email }));
+        login(token, { name: role === 'admin' ? 'Admin' : email, email, role });
 
-      if (role === 'admin') {
-        navigate('/admin/dashboard');
-      } else {
-        navigate('/');
+        setError('');
+        navigate(role === 'admin' ? '/admin/dashboard' : '/');
+        return;
       }
-      return;
-    } else if (mode === 'register') {
- if (!validateNationalId(formData.nationalId)) {
- throw new Error(isRTL ? 'الرقم القومي يجب أن يكون 14 رقماً بالضبط' : 'National ID must be exactly 14 digits');
- }
- if (!validatePassword(formData.password)) {
- throw new Error(isRTL ? 'كلمة المرور ضعيفة. يجب أن تحتوي على 8 أحرف، حرف كبير، حرف صغير، رقم ورمز خاص' : 'Password must be 8+ chars and contain upper, lower, number, and special char');
- }
- if (formData.password !== formData.confirmPassword) {
- throw new Error(isRTL ? 'كلمات المرور لا تتطابق' : 'Passwords do not match');
- }
- if (!formData.governorate || !formData.city) {
- throw new Error(isRTL ? 'يرجى اختيار المحافظة والمدينة' : 'Please select Governorate and City');
- }
- await apiRegister(formData);
- setMode('otp');
- } else if (mode === 'otp') {
-  const otpValue = formData.otp.replace(/\s+/g, '').trim();
-  if (!/^\d{6}$/.test(otpValue)) {
-    throw new Error(isRTL ? 'رمز التفعيل غير صالح' : 'Invalid OTP code');
-  }
 
-  const res = await apiVerifyOTP({ email: formData.email, otp: otpValue });
-  if (res.success && res.token) {
-    const userRes = await getMe(res.token);
-    const verifiedUser = userRes.data.user;
-    login(res.token, { ...verifiedUser, role: verifiedUser.role === 'user' ? 'client' : verifiedUser.role });
-    navigate('/');
-  } else {
-    throw new Error(res.message || 'OTP verification failed');
-  }
- } else if (mode === 'forgot-password') {
- if (formData.email) {
- await apiForgotPassword(formData.email);
- setMode('login');
- setError(isRTL ? 'تم إرسال رابط إعادة التعيين إلى بريدك الإلكتروني' : 'Reset link sent to your email');
- }
- }
+      if (mode === 'register') {
+        if (!validateNationalId(formData.nationalId)) {
+          throw new Error(isRTL ? 'الرقم القومي يجب أن يكون 14 رقماً بالضبط' : 'National ID must be exactly 14 digits');
+        }
+        if (!validatePassword(formData.password)) {
+          throw new Error(
+            isRTL
+              ? 'كلمة المرور ضعيفة. يجب أن تحتوي على 8 أحرف، حرف كبير، حرف صغير، رقم ورمز خاص'
+              : 'Password must be 8+ chars and contain upper, lower, number, and special char'
+          );
+        }
+        if (formData.password !== formData.confirmPassword) {
+          throw new Error(isRTL ? 'كلمات المرور لا تتطابق' : 'Passwords do not match');
+        }
+        if (!formData.governorate || !formData.city) {
+          throw new Error(isRTL ? 'يرجى اختيار المحافظة والمدينة' : 'Please select Governorate and City');
+        }
+
+        // Simulate registration success and move to OTP step.
+        setMode('otp');
+        setError('');
+        return;
+      }
+
+      if (mode === 'otp') {
+        const otpValue = formData.otp.replace(/\s+/g, '').trim();
+        if (!/^\d{6}$/.test(otpValue)) {
+          throw new Error(isRTL ? 'رمز التفعيل غير صالح' : 'Invalid OTP code');
+        }
+
+        // Simulate OTP verification success.
+        const token = `mock_token_${Date.now()}`;
+        const role = formData.role;
+        login(token, { name: role === 'admin' ? 'Admin' : formData.email, email: formData.email, role });
+
+        setError('');
+        navigate(role === 'admin' ? '/admin/dashboard' : '/');
+        return;
+      }
+
+      if (mode === 'forgot-password') {
+        if (formData.email) {
+          setMode('login');
+          setError(isRTL ? 'تم إرسال رابط إعادة التعيين إلى بريدك الإلكتروني' : 'Reset link sent to your email');
+        }
+        return;
+      }
     } catch (err: any) {
-    // For the mock login, we always return early above.
-    // Keep existing error handling for register/otp/forgot-password flows.
-    // Provide an actionable error message instead of generic "Network Error"
-    if (axios.isAxiosError(err)) {
-      if (err.response) {
-        const status = err.response.status;
-        const msg =
-          status === 502 || status === 503
-            ? 'Unable to reach the backend. Please ensure backend server is running.'
-            : err.response.data?.message || err.response.data?.error || 'Request failed';
-        setError(typeof msg === 'string' ? msg : 'Request failed');
-      } else if (err.request) {
-        setError('Unable to reach the backend. Please ensure backend server is running.');
-      } else {
-        setError(err.message || 'Request failed');
-      }
-    } else {
-      setError(err?.message || 'An error occurred');
-    }
+      setError(err?.message || (isRTL ? 'حدث خطأ غير متوقع' : 'Unexpected error'));
  } finally {
  setLoading(false);
  }
