@@ -140,11 +140,23 @@ const AuthPage = () => {
       message: `رابط إعادة تعيين كلمة المرور:\n${resetLink}`,
     };
 
+    // Debug (production support)
+    // eslint-disable-next-line no-console
+    console.log('Sending email with:', templateParams);
+
     if (!isEmailJsConfigured) {
+      // eslint-disable-next-line no-console
+      console.error('EmailJS is not configured. Check TEMPLATE_ID / PUBLIC_KEY (env or constants).');
       throw new Error(isRTL ? 'خدمة البريد غير مهيأة حالياً' : 'Email service is not configured');
     }
 
-    await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY);
+    try {
+      await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('EmailJS error:', error);
+      throw error;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
