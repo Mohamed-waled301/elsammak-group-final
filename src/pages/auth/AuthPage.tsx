@@ -53,11 +53,11 @@ const AuthPage = () => {
  };
 
   // EmailJS (frontend-only)
-  const SERVICE_ID = 'service_pim0kkq';
-  const TEMPLATE_ID = 'template_hzraj7f';
-  const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'PUT_YOUR_PUBLIC_KEY_HERE';
+  const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
+  const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '';
+  const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
 
-  const isEmailJsConfigured = Boolean(PUBLIC_KEY) && PUBLIC_KEY !== 'PUT_YOUR_PUBLIC_KEY_HERE';
+  const isEmailJsConfigured = Boolean(SERVICE_ID) && Boolean(TEMPLATE_ID) && Boolean(PUBLIC_KEY);
 
   // Kept for backward compatibility (older sendForm logic); not used for OTP anymore.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -88,14 +88,14 @@ const AuthPage = () => {
       }
 
       const response = await emailjs.send(
-        SERVICE_ID,
-        TEMPLATE_ID,
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
         {
           email,
           message,
           name,
         },
-        PUBLIC_KEY,
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
       );
 
       // eslint-disable-next-line no-console
