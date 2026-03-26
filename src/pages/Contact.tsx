@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Button from '../components/Button';
+import emailjs from '@emailjs/browser';
 
 const Contact = () => {
  const { t, i18n } = useTranslation();
@@ -20,26 +21,10 @@ const Contact = () => {
     !String(TEMPLATE_ID).includes('PUT YOUR') &&
     !String(PUBLIC_KEY).includes('PUT YOUR');
 
-  useEffect(() => {
-    // Load EmailJS in production without relying on any backend.
-    const w = window as any;
-    if (w.emailjs) return;
-
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js';
-    script.async = true;
-    document.body.appendChild(script);
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formRef.current) return;
 
-    const w = window as any;
-    if (!w.emailjs?.sendForm) {
-      alert('تعذر إرسال الرسالة حالياً. يرجى المحاولة لاحقاً.');
-      return;
-    }
     if (!isEmailJsConfigured) {
       alert('خدمة البريد غير مهيأة حالياً. يرجى المحاولة لاحقاً.');
       return;
@@ -47,7 +32,8 @@ const Contact = () => {
 
     setIsSending(true);
     try {
-      await w.emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current, PUBLIC_KEY);
+      // Keep existing functionality: send the form with EmailJS, but via @emailjs/browser
+      await emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current, PUBLIC_KEY);
       alert('تم إرسال رسالتك بنجاح.');
     } catch (err) {
       console.error('EmailJS error:', err);

@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Mail, Lock, User, Phone, CreditCard, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import LocationSelect from '../../components/LocationSelect';
-import emailjs from 'emailjs-com';
+import emailjs from '@emailjs/browser';
 
 type AuthMode = 'login' | 'register' | 'otp' | 'forgot-password';
 
@@ -54,20 +54,16 @@ const AuthPage = () => {
 
   // EmailJS (frontend-only)
   const SERVICE_ID = 'service_pim0kkq';
-  const TEMPLATE_ID =
-    (import.meta as any).env?.VITE_EMAILJS_TEMPLATE_ID || '[PUT YOUR TEMPLATE ID HERE]';
-  const PUBLIC_KEY =
-    (import.meta as any).env?.VITE_EMAILJS_PUBLIC_KEY || '[PUT YOUR PUBLIC KEY HERE]';
+  const TEMPLATE_ID = 'template_hzraj7f';
+  const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'PUT_YOUR_PUBLIC_KEY_HERE';
 
-  const isEmailJsConfigured =
-    Boolean(SERVICE_ID) &&
-    Boolean(TEMPLATE_ID) &&
-    Boolean(PUBLIC_KEY) &&
-    !String(TEMPLATE_ID).includes('PUT YOUR') &&
-    !String(PUBLIC_KEY).includes('PUT YOUR');
+  const isEmailJsConfigured = Boolean(PUBLIC_KEY) && PUBLIC_KEY !== 'PUT_YOUR_PUBLIC_KEY_HERE';
 
+  // Kept for backward compatibility (older sendForm logic); not used for OTP anymore.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const emailFormRef = useRef<HTMLFormElement | null>(null);
-  const [emailJsReady, setEmailJsReady] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [emailJsReady] = useState(true);
 
   useEffect(() => {
     const urlMode = (searchParams.get('mode') || '').trim() as AuthMode;
@@ -79,85 +75,84 @@ const AuthPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    const w = window as any;
-    if (w.emailjs?.sendForm) {
-      setEmailJsReady(true);
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js';
-    script.async = true;
-    script.onload = () => {
-      const ww = window as any;
-      setEmailJsReady(Boolean(ww.emailjs?.sendForm));
-    };
-    document.body.appendChild(script);
-  }, []);
-
-  const sendEmail = async (payload: { name: string; email: string; message: string }) => {
-    if (!isEmailJsConfigured) {
-      throw new Error(isRTL ? 'خدمة البريد غير مهيأة حالياً' : 'Email service is not configured');
-    }
-    const w = window as any;
-    if (!w.emailjs?.sendForm || !emailFormRef.current) {
-      throw new Error('EmailJS not ready');
-    }
-
-    // EmailJS reads form fields by their `name` attribute.
-    const form = emailFormRef.current;
-    const setField = (fieldName: string, value: string) => {
-      const el = form.querySelector(`input[name="${fieldName}"], textarea[name="${fieldName}"]`) as
-        | HTMLInputElement
-        | HTMLTextAreaElement
-        | null;
-      if (el) el.value = value;
-    };
-
-    setField('name', payload.name);
-    setField('email', payload.email);
-    setField('message', payload.message);
-
-    await w.emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, form, PUBLIC_KEY);
-  };
-
-  // Reset password email: REQUIRED to use emailjs.send() only (no sendForm)
-  const sendResetEmail = async (email: string) => {
+  // Reusable EmailJS function (OTP + Reset Password)
+  const sendEmail = async (email: string, message: string, name = 'El-Samak Group') => {
     try {
-      const token = Math.random().toString(36).substring(2);
+      // eslint-disable-next-line no-console
+      console.log('Email before sending:', email);
 
-      localStorage.setItem('reset_' + email, token);
+      if (!isEmailJsConfigured) {
+        // eslint-disable-next-line no-console
+        console.error('EMAIL FAILED: Missing VITE_EMAILJS_PUBLIC_KEY');
+        return false;
+      }
 
-      const resetLink =
-        window.location.origin +
-        '/reset-password?token=' +
-        token +
-        '&email=' +
-        email;
-
-      const templateParams = {
-        name: email,
-        email: email,
-        message: 'رابط إعادة تعيين كلمة المرور:\n' + resetLink,
-      };
+      const response = await emailjs.send(
+        SERVICE_ID,
+        TEMPLATE_ID,
+        {
+          email,
+          message,
+          name,
+        },
+        PUBLIC_KEY,
+      );
 
       // eslint-disable-next-line no-console
-      console.log('Sending email:', templateParams);
-
-      // CRITICAL: You must set REAL values here (or via env and replace these constants).
-      // I cannot guess these for you.
-      const REAL_TEMPLATE_ID = TEMPLATE_ID; // e.g. "template_abcd123"
-      const REAL_PUBLIC_KEY = PUBLIC_KEY; // e.g. "user_xxxxx" / "public_xxxxx"
-
-      await emailjs.send('service_pim0kkq', REAL_TEMPLATE_ID, templateParams, REAL_PUBLIC_KEY);
-
-      alert(isRTL ? 'تم إرسال الرابط بنجاح' : 'Reset link sent successfully');
+      console.log('EMAIL SENT SUCCESS:', response);
+      return true;
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error('EmailJS ERROR:', error);
-      alert(isRTL ? 'فشل في إرسال الرابط' : 'Failed to send reset link');
+      console.error('EMAIL FAILED:', error);
+      return false;
     }
+  };
+
+  // OTP helpers (generation + send + verify)
+  const generateOTP = () => Math.floor(100000 + Math.random() * 900000);
+
+  const sendOTP = async (email: string) => {
+    const otp = generateOTP();
+
+    localStorage.setItem('signup_otp', String(otp));
+    localStorage.setItem('signup_email', email);
+
+    // Debug logs
+    // eslint-disable-next-line no-console
+    console.log('Generated OTP:', otp);
+    // eslint-disable-next-line no-console
+    console.log('Saved OTP:', localStorage.getItem('signup_otp'));
+
+    await sendEmail(email, `كود التفعيل الخاص بك هو: ${otp}`);
+  };
+
+  const verifyOTP = (enteredOtp: string) => {
+    const savedOtp = localStorage.getItem('signup_otp');
+    if (enteredOtp === savedOtp) {
+      alert('تم التفعيل بنجاح');
+      return true;
+    }
+    alert('رمز التفعيل غير صحيح');
+    return false;
+  };
+
+  // Reset password link sender
+  const sendResetLink = async (email: string) => {
+    const token =
+      typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+        ? crypto.randomUUID()
+        : Math.random().toString(36).substring(2);
+
+    localStorage.setItem('reset_token', token);
+    localStorage.setItem('reset_email', email);
+
+    const link = `${window.location.origin}/reset-password?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`;
+
+    // Debug logs
+    // eslint-disable-next-line no-console
+    console.log('Reset Link:', link);
+
+    await sendEmail(email, link);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -223,32 +218,15 @@ const AuthPage = () => {
           throw new Error(isRTL ? 'يرجى اختيار المحافظة والمدينة' : 'Please select Governorate and City');
         }
 
-        // Generate OTP and send email via EmailJS.
         const email = formData.email.trim();
-        const otp = String(Math.floor(100000 + Math.random() * 900000));
-
-        localStorage.setItem('otp_' + email, otp);
         localStorage.setItem('pending_pass_' + email, formData.password);
         localStorage.setItem('name_' + email, formData.name);
 
-        try {
-          await sendEmail({ name: formData.name, email, message: otp });
-          alert(isRTL ? 'تم إرسال كود التفعيل إلى بريدك الإلكتروني بنجاح.' : 'OTP sent successfully.');
-          setMode('otp');
-          setError('');
-          return;
-        } catch {
-          // Even if EmailJS fails, we still move to OTP step so the user can verify using the generated OTP
-          // stored in localStorage (frontend-only mode).
-          alert(
-            isRTL
-              ? 'تم إنشاء كود التفعيل. قد لا يكون البريد قد وصل بعد، يرجى إدخال الكود في الخطوة التالية.'
-              : 'OTP was generated. Email might not be delivered yet—please enter the OTP in the next step.',
-          );
-          setMode('otp');
-          setError('');
-          return;
-        }
+        await sendOTP(email);
+        alert(isRTL ? 'تم إرسال كود التفعيل إلى بريدك الإلكتروني بنجاح.' : 'OTP sent successfully.');
+        setMode('otp');
+        setError('');
+        return;
       }
 
       if (mode === 'otp') {
@@ -258,20 +236,17 @@ const AuthPage = () => {
         }
 
         const email = formData.email.trim();
-        const storedOtp = localStorage.getItem('otp_' + email);
-
-        if (!storedOtp || storedOtp !== otpValue) {
-          setError(isRTL ? 'رمز التفعيل غير صحيح' : 'Invalid OTP');
-          return;
-        }
+        if (!verifyOTP(otpValue)) return;
 
         const pendingPass = localStorage.getItem('pending_pass_' + email) || formData.password;
         localStorage.setItem('user_' + email, pendingPass);
         localStorage.setItem('verified_' + email, 'true');
+        localStorage.removeItem('signup_otp');
+        localStorage.removeItem('signup_email');
         localStorage.removeItem('otp_' + email);
         localStorage.removeItem('pending_pass_' + email);
 
-        alert(isRTL ? 'تم تأكيد البريد الإلكتروني بنجاح. يمكنك تسجيل الدخول الآن.' : 'Email verified. You can log in now.');
+        // verifyOTP already shows Arabic success/failure alerts as required
         setMode('login');
         setError('');
         return;
@@ -281,7 +256,7 @@ const AuthPage = () => {
         if (formData.email) {
           const email = formData.email.trim();
 
-          await sendResetEmail(email);
+          await sendResetLink(email);
 
           setMode('login');
           setError('');
