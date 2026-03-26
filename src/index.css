@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+ --color-primary: #003B5C;
+ --color-primary-light: #004d7a;
+ --color-gold: #c5a059;
+ --color-gold-light: #d6b87c;
+ --color-charcoal: #1e293b;
+ --color-dark-surface: #0f172a;
+
+ --font-sans: 'Inter', system-ui, sans-serif;
+ --font-arabic: 'Cairo', 'Tajawal', sans-serif;
+}
+
+@layer base {
+  :root {
+ --bg-color: #F8FAFC;
+ --text-color: #1E293B;
+ }
+
+ @keyframes brandGlow {
+   0%, 100% {
+     text-shadow: 0 0 8px rgba(197, 160, 89, 0.35), 0 0 22px rgba(197, 160, 89, 0.25);
+   }
+   50% {
+     text-shadow: 0 0 14px rgba(197, 160, 89, 0.7), 0 0 40px rgba(197, 160, 89, 0.35);
+   }
+ }
+
+ .brand-glow {
+   animation: brandGlow 2.6s ease-in-out infinite;
+ }
+
+ body {
+ @apply bg-[var(--bg-color)] text-[var(--text-color)] antialiased transition-colors duration-300;
+ font-family: var(--font-sans);
+ }
+ 
+ html[dir="rtl"] body {
+ font-family: var(--font-arabic);
+ }
+
+ /* Premium Scrollbar */
+ ::-webkit-scrollbar {
+ width: 8px;
+ }
+ ::-webkit-scrollbar-track {
+ background: transparent;
+ }
+  ::-webkit-scrollbar-thumb {
+ background: #003B5C;
+ border-radius: 4px;
+ }
+
+ /* Selection */
+ ::selection {
+ background: #c5a059;
+ color: white;
+ }
+}
