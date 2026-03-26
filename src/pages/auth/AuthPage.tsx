@@ -172,7 +172,15 @@ const AuthPage = () => {
           setError('');
           return;
         } catch {
-          alert(isRTL ? 'تعذر إرسال كود التفعيل. يرجى المحاولة لاحقاً.' : 'Failed to send OTP. Please try again later.');
+          // Even if EmailJS fails, we still move to OTP step so the user can verify using the generated OTP
+          // stored in localStorage (frontend-only mode).
+          alert(
+            isRTL
+              ? 'تم إنشاء كود التفعيل. قد لا يكون البريد قد وصل بعد، يرجى إدخال الكود في الخطوة التالية.'
+              : 'OTP was generated. Email might not be delivered yet—please enter the OTP in the next step.',
+          );
+          setMode('otp');
+          setError('');
           return;
         }
       }
