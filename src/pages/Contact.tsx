@@ -13,6 +13,12 @@ const Contact = () => {
   const SERVICE_ID = 'service_pim0kkq';
   const TEMPLATE_ID = (import.meta as any).env?.VITE_EMAILJS_TEMPLATE_ID || '[PUT YOUR TEMPLATE ID HERE]';
   const PUBLIC_KEY = (import.meta as any).env?.VITE_EMAILJS_PUBLIC_KEY || '[PUT YOUR PUBLIC KEY HERE]';
+  const isEmailJsConfigured =
+    Boolean(SERVICE_ID) &&
+    Boolean(TEMPLATE_ID) &&
+    Boolean(PUBLIC_KEY) &&
+    !String(TEMPLATE_ID).includes('PUT YOUR') &&
+    !String(PUBLIC_KEY).includes('PUT YOUR');
 
   useEffect(() => {
     // Load EmailJS in production without relying on any backend.
@@ -32,6 +38,10 @@ const Contact = () => {
     const w = window as any;
     if (!w.emailjs?.sendForm) {
       alert('تعذر إرسال الرسالة حالياً. يرجى المحاولة لاحقاً.');
+      return;
+    }
+    if (!isEmailJsConfigured) {
+      alert('خدمة البريد غير مهيأة حالياً. يرجى المحاولة لاحقاً.');
       return;
     }
 

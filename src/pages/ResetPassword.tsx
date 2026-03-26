@@ -19,7 +19,14 @@ export default function ResetPassword() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const validatePassword = (value: string) => value.length >= 8;
+  const validatePassword = (value: string) => {
+    const minLength = value.length >= 8;
+    const hasUpper = /[A-Z]/.test(value);
+    const hasLower = /[a-z]/.test(value);
+    const hasNumber = /[0-9]/.test(value);
+    const hasSpecial = /[^A-Za-z0-9]/.test(value);
+    return minLength && hasUpper && hasLower && hasNumber && hasSpecial;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +42,7 @@ export default function ResetPassword() {
     }
 
     if (!validatePassword(password)) {
-      setError('كلمة المرور يجب أن تكون 8 أحرف على الأقل');
+      setError('كلمة المرور ضعيفة. يجب أن تحتوي على 8 أحرف، حرف كبير، حرف صغير، رقم ورمز خاص');
       return;
     }
 

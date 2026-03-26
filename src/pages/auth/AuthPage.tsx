@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Mail, Lock, User, Phone, CreditCard, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import LocationSelect from '../../components/LocationSelect';
@@ -10,6 +10,7 @@ type AuthMode = 'login' | 'register' | 'otp' | 'forgot-password';
 const AuthPage = () => {
  const { login } = useAuth();
  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
  const { i18n } = useTranslation();
  const isRTL = i18n.language === 'ar';
 
@@ -57,8 +58,25 @@ const AuthPage = () => {
   const PUBLIC_KEY =
     (import.meta as any).env?.VITE_EMAILJS_PUBLIC_KEY || '[PUT YOUR PUBLIC KEY HERE]';
 
+  const isEmailJsConfigured =
+    Boolean(SERVICE_ID) &&
+    Boolean(TEMPLATE_ID) &&
+    Boolean(PUBLIC_KEY) &&
+    !String(TEMPLATE_ID).includes('PUT YOUR') &&
+    !String(PUBLIC_KEY).includes('PUT YOUR');
+
   const emailFormRef = useRef<HTMLFormElement | null>(null);
   const [emailJsReady, setEmailJsReady] = useState(false);
+
+  useEffect(() => {
+    const urlMode = (searchParams.get('mode') || '').trim() as AuthMode;
+    if (urlMode === 'register' || urlMode === 'forgot-password' || urlMode === 'login' || urlMode === 'otp') {
+      setMode(urlMode);
+      setError('');
+    }
+    // only on initial mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const w = window as any;
@@ -78,6 +96,9 @@ const AuthPage = () => {
   }, []);
 
   const sendEmail = async (payload: { name: string; email: string; message: string }) => {
+    if (!isEmailJsConfigured) {
+      throw new Error(isRTL ? 'خدمة البريد غير مهيأة حالياً' : 'Email service is not configured');
+    }
     const w = window as any;
     if (!w.emailjs?.sendForm || !emailFormRef.current) {
       throw new Error('EmailJS not ready');
@@ -366,10 +387,15 @@ const AuthPage = () => {
  </div>
  )}
 
- {/* SUBMIT BUTTON */}
+          {/* SUBMIT BUTTON */}
+          {(() => {
+            const shouldRequireEmailJs = mode === 'register' || mode === 'forgot-password';
+            const isDisabled = loading || (shouldRequireEmailJs && !emailJsReady);
+
+            return (
  <button
  type="submit"
- disabled={loading}
+              disabled={isDisabled}
  className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-lg shadow-sm text-sm font-medium text-white bg-[#003B5C] hover:bg-[#002b44] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B5C] disabled:opacity-50 transition-colors"
  >
  {loading && (
@@ -384,6 +410,8 @@ const AuthPage = () => {
  {mode === 'forgot-password' && (isRTL ? 'إرسال الرابط' : 'Send Reset Link')}
  {!loading && <ArrowRight className={`w-4 h-4 ${isRTL ? 'rotate-180' : ''}`} />}
  </button>
+            );
+          })()}
 
  {/* TOGGLE MODES */}
  <div className="mt-6 text-center text-sm text-gray-600 ">

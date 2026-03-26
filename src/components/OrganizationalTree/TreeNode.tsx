@@ -97,9 +97,16 @@ function TreeNode({ node, depth, isExpanded, onToggle }: TreeNodeProps) {
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
           >
             <img
-              src={imageByNodeId[node.id] || '/images/waleed.jpg.jpeg'}
+              src={imageByNodeId[node.id] || '/images/avatar-placeholder.svg'}
               alt={node.name?.ar || 'رئيس مجلس الإدارة'}
               className="w-32 h-32 rounded-full mx-auto mb-4 shadow-lg border object-cover"
+              onError={(e) => {
+                const img = e.currentTarget;
+                if (!img.dataset.fallbackApplied) {
+                  img.dataset.fallbackApplied = 'true';
+                  img.src = '/images/avatar-placeholder.svg';
+                }
+              }}
             />
             <h4 className="org-node-bio-name">{node.name?.ar}</h4>
             <div className="org-node-bio-text">

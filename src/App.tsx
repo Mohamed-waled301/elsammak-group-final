@@ -37,6 +37,11 @@ function AppRoutes() {
 
  return (
  <Routes>
+      {/* Legacy auth paths -> unified AuthPage */}
+      <Route path="/login" element={<Navigate to="/auth" replace />} />
+      <Route path="/register" element={<Navigate to="/auth?mode=register" replace />} />
+      <Route path="/forgot-password" element={<Navigate to="/auth?mode=forgot-password" replace />} />
+
  <Route 
  path="/auth" 
  element={
