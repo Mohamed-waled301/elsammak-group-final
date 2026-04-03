@@ -1,0 +1,370 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "data_analysis": "Data Analysis",
+    "training": "Training",
+    "organization_structure": "Organizational Structure",
+    "contact": "Contact"
+  },
+  "hero": {
+    "title": "Empowering Your Business with Legal & Financial Excellence",
+    "subtitle": "Leading a risk-free digital business environment with deep legal expertise and advanced accounting efficiency.",
+    "cta": "Book Consultation"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "fullName": "Full Name",
+    "nationalId": "National ID",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "phone": "Phone Number",
+    "gov": "Governorate",
+    "city": "City",
+    "dont_have_account": "Don't have an account?",
+    "have_account": "Already have an account?",
+    "portal_subtitle": "Client & Admin Portal",
+    "sign_in": "Sign In",
+    "create_account": "Create Account",
+    "account_activation": "Account Activation",
+    "welcome_back": "Welcome back to El-Sammak Group",
+    "complete_details": "Please complete the following details",
+    "otp_sent_blurb": "A verification code has been sent to your email",
+    "enter_email_password": "Please enter email and password",
+    "login_failed": "Login failed",
+    "not_admin_account": "This account is not an admin account",
+    "login_success": "Logged in successfully",
+    "national_id_invalid": "National ID must be exactly 14 digits",
+    "password_weak": "Password must be 8+ characters with upper, lower, number, and special character",
+    "password_min_length_six": "Password must be at least 6 characters",
+    "passwords_mismatch": "Passwords do not match",
+    "select_location": "Please select Governorate and City",
+    "reserved_email_register": "This email is reserved and cannot be used for customer registration.",
+    "register_failed": "Registration failed",
+    "otp_sent": "Verification code sent to your email",
+    "otp_invalid": "Invalid verification code",
+    "activation_failed": "Activation failed",
+    "activation_success": "Account activated successfully",
+    "unexpected_error": "An unexpected error occurred",
+    "email_placeholder": "Email Address",
+    "password_placeholder": "Password",
+    "confirm_password_placeholder": "Confirm Password",
+    "password_rules_blurb": "Must contain 8 characters, numbers, symbols, uppercase and lowercase letters",
+    "full_name_placeholder": "Full Name",
+    "national_id_placeholder": "National ID (14 digits)",
+    "whatsapp_placeholder": "WhatsApp Number",
+    "otp_placeholder": "Verification code",
+    "role_client": "Client",
+    "role_admin": "Admin",
+    "admin_only_hint": "Only the designated company administrator account may sign in here.",
+    "continue_with_email_code": "Forgot password",
+    "lang_en": "EN",
+    "lang_ar": "عربي",
+    "language_toggle_aria": "Language",
+    "bootstrap_title": "Create administrator",
+    "bootstrap_subtitle": "Set up the only admin account. This can be done once.",
+    "bootstrap_submit": "Create administrator",
+    "bootstrap_password_confirm": "Confirm password",
+    "bootstrap_success": "Administrator created. Sign in with the Admin tab.",
+    "loading_auth": "Loading…",
+    "sign_in_button": "Sign In",
+    "confirm_registration": "Confirm Registration",
+    "activate_login": "Activate & sign in",
+    "create_one": "Create one",
+    "back_to": "Back to",
+    "promo_video_aria": "Company overview video",
+    "promo_video_unsupported": "Your browser does not support embedded video.",
+    "promo_video_placeholder": "Add your video file at public/videos/company-promo.mp4 or set VITE_PROMO_VIDEO_URL in your environment.",
+    "promo_video_label": "El-Sammak Group",
+    "promo_video_caption": "Discover our services and how we support your goals.",
+    "password_help_title": "Reset password with email code",
+    "password_help_blurb": "We will email a 6-digit code to your address. Enter the code, then choose a new password.",
+    "send_code": "Send code",
+    "sending": "Sending…",
+    "verify_code": "Verify code",
+    "verifying": "Verifying…",
+    "use_different_email": "Use a different email",
+    "new_password": "New password",
+    "confirm_new_password": "Confirm password",
+    "saving": "Saving…",
+    "update_password": "Update password",
+    "back_to_sign_in": "Back to sign in",
+    "code_verified": "Code verified. You can now choose a new password.",
+    "reset_flow_failed": "Could not complete password reset"
+  },
+  "common": {
+    "book_consultation": "Book Consultation",
+    "learn_more": "Learn More",
+    "read_more": "Read More",
+    "day_unavailable": "This day is not available",
+    "booking_date": "Booking Date",
+    "processing": "Processing...",
+    "confirm_booking": "Confirm Booking",
+    "return_home": "Return Home",
+    "booking_confirmed": "Consultation booked",
+    "booking_pending_schedule": "Your consultation is booked. We will contact you to schedule the appointment."
+  },
+  "home": {
+    "brand_name": "Elsamak Group",
+    "about_title": "About elsamak Group",
+    "tagline": "Legal • Accounting • Analytics",
+    "about_desc": "Leading a risk-free digital business environment with deep legal expertise and advanced accounting efficiency.",
+    "capabilities_title": "Our Capabilities",
+    "capabilities_subtitle": "Professional Services",
+    "why_choose_us": "Why Choose Us",
+    "commitment_title": "Commitment to Excellence",
+    "commitment_desc": "We combine industry-leading expertise with a commitment to our core values, ensuring your success in every legal and financial endeavor.",
+    "values": {
+      "v1": "Governance",
+      "v2": "Transparency",
+      "v3": "Professional Excellence",
+      "v4": "Confidentiality"
+    },
+    "experience_years": "Years of Experience",
+    "cta_title": "Ready to Transform Your Business?",
+    "cta_desc": "Get in touch with our experts today to discuss your legal, financial, or developmental needs.",
+    "distinguished": "We don't just advise... we engineer excellence and set the standard."
+  },
+  "servicesItems": {
+    "legal_consulting": "Legal Consulting",
+    "legal_consulting_desc": "Company formation, contract drafting, and litigation.",
+    "accounting_tax": "Accounting & Tax",
+    "accounting_tax_desc": "Financial statements, tax planning, and digital accounting.",
+    "risk_compliance": "Risk & Compliance",
+    "risk_compliance_desc": "Risk assessment and digital transformation compliance.",
+    "data_analysis": "Data Analysis",
+    "data_analysis_desc": "Analytics for decision making and forecasting.",
+    "training": "Training",
+    "training_desc": "Accounting, legal, and data analysis bootcamps."
+  },
+  "about": {
+    "title": "About elsamak Group",
+    "subtitle": "Your trusted partner in legal and financial excellence.",
+    "profile_label": "Company Profile",
+    "who_we_are": "Who We Are",
+    "desc_1": "elsamak Group is a leading professional entity combining deep legal expertise with advanced accounting efficiency. We bridge the gap between regulatory compliance and financial growth, ensuring our clients operate in a risk-free digital business environment.",
+    "desc_2": "Founded on the principles of integrity and innovation, we continually adapt to the modern digital economy, offering comprehensive solutions tailored to your unique business needs.",
+    "vision_title": "Our Vision",
+    "vision_desc": "Leading a risk-free digital business environment globally.",
+    "mission_title": "Our Mission",
+    "mission_desc": "Empowering clients to make smart legal and financial decisions through expert guidance and innovative digital tools.",
+    "philosophy_label": "Our Philosophy",
+    "core_values": "Core Values",
+    "val_1_title": "Digital Governance",
+    "val_1_desc": "Implementing cutting-edge digital frameworks for corporate governance.",
+    "val_2_title": "Transparency",
+    "val_2_desc": "Clear, open, and honest communication in all our professional dealings.",
+    "val_3_title": "Professional Excellence",
+    "val_3_desc": "Delivering the highest standard of service across legal and financial sectors.",
+    "val_4_title": "Confidentiality",
+    "val_4_desc": "Strict adherence to privacy and data protection protocols.",
+    "video_kicker": "Watch our story",
+    "video_section_title": "About us in motion",
+    "video_loading": "Loading video…",
+    "video_unsupported": "Your browser does not support embedded video.",
+    "video_fallback": "This video could not be played. Check the file or URL, then refresh the page.",
+    "video_placeholder": "Add company-promo.mp4 to public/assets/videos/ or public/videos/, or set VITE_ABOUT_VIDEO_URL. Use MP4 (H.264) for widest support."
+  },
+  "services": {
+    "title": "Our Services",
+    "subtitle": "Expertise that drives your business forward securely and profitably.",
+    "legal": {
+      "title": "Legal Consulting",
+      "desc": "Comprehensive legal support tailored for the modern digital corporate environment.",
+      "items": [
+        "Company formation and registration",
+        "Contract drafting and review",
+        "Litigation (Labor, Civil, Family, Criminal, State Lawsuits, Appeal)",
+        "Arbitration and mediation",
+        "Intellectual property protection",
+        "Anti-Money Laundering Protocols"
+      ]
+    },
+    "accounting": {
+      "title": "Accounting & Tax",
+      "desc": "Ensuring financial accuracy and compliance with local and international tax laws.",
+      "items": [
+        "Preparation of financial statements",
+        "Corporate tax planning and filing",
+        "Implementation of digital accounting systems",
+        "Audit and assurance services",
+        "Payroll management"
+      ]
+    },
+    "risk": {
+      "title": "Risk & Compliance",
+      "desc": "Safeguarding your business operations proactively against regulatory risks.",
+      "items": [
+        "Comprehensive risk assessment audits",
+        "Digital transformation compliance",
+        "Corporate governance structuring"
+      ]
+    }
+  },
+  "training": {
+    "title": "Training & Professional Development",
+    "subtitle": "Equip your team with cutting-edge skills to excel in the digital economy.",
+    "programs_label": "Our Programs",
+    "upcoming_courses": "Upcoming Courses",
+    "duration": "Duration:",
+    "start": "Start:",
+    "format": "Format:",
+    "book_seat": "Book Your Seat",
+    "booking_help": "Please provide your details to reserve your seat in the training program.",
+    "program_label": "Training Program",
+    "select_program": "Select a program...",
+    "success_title": "Successfully booked",
+    "success_msg": "You are booked successfully. Details have been sent to your email.",
+    "booking_confirmed_toast": "Booking received — check your email for confirmation.",
+    "courses": {
+      "c1_title": "Advanced Digital Accounting",
+      "c1_cat": "Finance",
+      "c1_dur": "4 Weeks",
+      "c1_start": "Next month",
+      "c1_fmt": "Online/On-site",
+      "c2_title": "Corporate Contract Drafting",
+      "c2_cat": "Legal",
+      "c2_dur": "2 Weeks",
+      "c2_start": "Rolling basis",
+      "c2_fmt": "On-site",
+      "c3_title": "Data Analysis",
+      "c3_cat": "Technology",
+      "c3_dur": "8 Weeks",
+      "c3_start": "Q3 2026",
+      "c3_fmt": "Online",
+      "c4_title": "Digital Transformation Compliance",
+      "c4_cat": "Management",
+      "c4_dur": "3 Days",
+      "c4_start": "Upcoming",
+      "c4_fmt": "Seminar",
+      "c5_title": "Human Resources Training",
+      "c5_cat": "Management",
+      "c5_dur": "6 Weeks",
+      "c5_start": "Next Month",
+      "c5_fmt": "Online/On-site",
+      "c6_title": "Legal Training for Lawyers",
+      "c6_cat": "Legal",
+      "c6_dur": "4 Weeks",
+      "c6_start": "Rolling basis",
+      "c6_fmt": "On-site"
+    }
+  },
+  "data_analysis": {
+    "title": "Data Analysis & Business Intelligence",
+    "subtitle": "Transform raw data into actionable insights to optimize your financial performance and strategic decisions.",
+    "harness_title": "Harness the Power of Your Data",
+    "harness_desc1": "In today's digital economy, data is your most valuable asset. Our Data Analysis and Business Intelligence services empower organizations to uncover hidden patterns, forecast trends, and make evidence-based decisions.",
+    "harness_desc2": "From financial modeling to market analysis, our experts utilize state-of-the-art tools to provide you with interactive, real-time dashboards and predictive insights.",
+    "consult_btn": "Consult our Data Experts",
+    "features": {
+      "f1_title": "Interactive Dashboards",
+      "f1_desc": "Custom KPI tracking and visual storytelling.",
+      "f2_title": "Predictive Analytics",
+      "f2_desc": "Forecasting future trends using historical data.",
+      "f3_title": "Financial Optimization",
+      "f3_desc": "Identifying cost-saving opportunities mathematically.",
+      "f4_title": "Regulatory Reporting",
+      "f4_desc": "Automated and accurate regulatory compliance reporting."
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Get in touch to discover how we can help your business thrive.",
+    "send_msg": "Send a Message",
+    "full_name": "Full Name",
+    "email": "Email Address",
+    "subject": "Subject",
+    "message": "Message",
+    "send_btn": "Send Inquiry",
+    "info_title": "Contact Information",
+    "office": "Our Office",
+    "office_addr": "Alex West Tower, Imam Hassan Al Shazly St., branching from Al Nabawi Al Mohandes St., Al Montazah District",
+    "phone": "Phone",
+    "phone_value": "01276691302",
+    "email_label": "Email",
+    "email_value": "elsamakgroup0@gmail.com",
+    "map_section_title": "Find us on the map",
+    "map_placeholder": "Our location on Google Maps",
+    "open_maps": "Open in Google Maps",
+    "open_map_btn": "Open location on map",
+    "subjects": {
+      "s1": "Legal Consulting",
+      "s2": "Accounting & Tax",
+      "s3": "Data Analysis",
+      "s4": "Training Inquiry",
+      "s5": "General"
+    }
+  }
+  ,
+  "footer": {
+    "tagline": "Empowering clients to make smart legal and financial decisions.",
+    "quick_links": "Quick Links",
+    "services": "Services",
+    "contact": "Contact",
+    "phone_value": "+20 111 111 1111",
+    "email_value": "elsamakgroup0@gmail.com",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "booking": {
+    "help_text": "Please fill in your details to schedule a professional consultation.",
+    "service_type": "Service Type",
+    "select_service": "Select a service...",
+    "open_maps": "View our main office on Google Maps",
+    "notes": "Additional Notes",
+    "notes_placeholder": "Briefly describe your requirements..."
+  },
+  "organization": {
+    "title": "Company Organizational Structure",
+    "subtitle": "A clear governance and management structure that supports legal, administrative, and financial excellence.",
+    "cards": {
+      "board": {
+        "title": "Board of Directors",
+        "chairmanLabel": "Chairman of the Board",
+        "chairman": "Accountant / Waleed Mohamed Elsamak"
+      },
+      "executive": {
+        "label": "Chief Executive & Treasurer",
+        "name": "Mr. Wael Mohamed Elsamak"
+      },
+      "legalManager": {
+        "label": "Administrative Director & Legal Representative",
+        "name": "Mr. Mohamed Ahmed El-Kassar"
+      }
+    },
+    "bio": {
+      "elkassar": {
+        "name": "Mohamed Ahmed Mohamed El-Kassar",
+        "title": "Group Legal Consultant and Executive Director",
+        "paragraphs": [
+          "Lawyer and legal consultant at the Court of Appeal and the State Council. He holds a Bachelor of Law through the international education system and is distinguished by professional expertise that combines deep legal knowledge with intelligent, practical application in real work environments.",
+          "He is known for seriousness and commitment in managing legal files, with strong analytical capability, professional drafting of legal memos, and courtroom defense across different judicial levels, while maintaining full respect for legal ethics and professional standards.",
+          "He consistently aims to provide innovative legal solutions that serve clients' best interests and achieve the highest levels of excellence in legal practice and consultancy."
+        ]
+      },
+      "wael": {
+        "name": "Mr. Wael Mohamed Ahmed Mohamed (Wael Lasheen)",
+        "title": "Administrative Director, Elsamak Group for Legal and Accounting Consulting",
+        "paragraphs": [
+          "He has over fifteen years of experience in training, management, and psychological and social guidance. He holds a Bachelor of Arts in Theatre Studies, a pre-master's qualification in Psychology, and specialized diplomas in psychology, social service, and educational management.",
+          "He combines field experience with academic grounding, enabling him to provide integrated professional vision in behavioral analysis, managerial skill development, human resources management, and institutional conflict resolution.",
+          "He relies on precision, objectivity, and transparency to support individuals and institutions while strengthening legal, organizational, and psychological stability."
+        ]
+      },
+      "waleed": {
+        "name": "Waleed Mohamed Ahmed Elsamak",
+        "title": "Expert in Financial and Administrative Management",
+        "paragraphs": [
+          "He has more than 15 years of professional experience across educational, healthcare, and corporate institutions, with an integrated career that combines executive, supervisory, and community roles.",
+          "He has advanced professional expertise in financial and accounting management, personnel affairs and HR, information systems, institutional statistics, and operational management, in addition to institutional development, workplace improvement, and performance optimization.",
+          "He has actively participated in public, political, and party work, and contributed to organizing and participating in national and developmental conferences.",
+          "He believes that commitment, integrity, and institutional discipline are the true foundation for building trust and achieving sustainable success.",
+          "(Include full remaining biography exactly as provided)"
+        ]
+      }
+    }
+  }
+}

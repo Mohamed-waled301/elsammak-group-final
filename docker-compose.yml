@@ -1,0 +1,12 @@
+# Local MongoDB for development (optional)
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    volumes:
+      - elsammak_mongo_data:/data/db
+
+volumes:
+  elsammak_mongo_data:
