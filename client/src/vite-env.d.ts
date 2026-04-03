@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  /** Optional; when unset, Vite dev server proxies `/api` to port 5000 */
+  /** Optional; when unset, client uses `DEFAULT_API_BASE_URL` in `src/config/api.ts` */
   readonly VITE_API_URL?: string;
   readonly VITE_ABOUT_VIDEO_URL?: string;
   readonly VITE_ABOUT_VIDEO_POSTER?: string;
