@@ -1,0 +1,268 @@
+{
+  "Cairo": [
+    "Nasr City",
+    "Maadi",
+    "Heliopolis",
+    "Downtown Cairo",
+    "Shubra",
+    "Ain Shams",
+    "Zamalek",
+    "Garden City",
+    "New Cairo",
+    "El Mokattam",
+    "El Rehab",
+    "Madinet Nasr",
+    "El Marg",
+    "15 May City",
+    "Badr City",
+    "El Shorouk",
+    "El Obour (Greater Cairo)"
+  ],
+  "Giza": [
+    "Dokki",
+    "Mohandessin",
+    "Haram",
+    "Agouza",
+    "Imbaba",
+    "Warraq",
+    "6th October City",
+    "Sheikh Zayed",
+    "Hadayek October",
+    "Awsim",
+    "Badrashin",
+    "Atfih",
+    "Omraneya",
+    "Faisal",
+    "Talbiya"
+  ],
+  "Alexandria": [
+    "Smouha",
+    "Sidi Gaber",
+    "Stanley",
+    "Montaza",
+    "Miami",
+    "Sporting",
+    "Sidi Bishr",
+    "Gleem",
+    "San Stefano",
+    "Agami",
+    "Burj Al Arab",
+    "Ameria",
+    "Asafra",
+    "Mandara",
+    "Roushdy"
+  ],
+  "Dakahlia": [
+    "Mansoura",
+    "Talkha",
+    "Mit Ghamr",
+    "Aga",
+    "Dekernes",
+    "Belqas",
+    "Sherbin",
+    "Manzala",
+    "Gamasa",
+    "Sinbillawain"
+  ],
+  "Sharqia": [
+    "Zagazig",
+    "10th of Ramadan City",
+    "Abu Hammad",
+    "Minya al-Qamh",
+    "Belbeis",
+    "Faqous",
+    "Hihya",
+    "Abu Kebir",
+    "Derb Negm",
+    "Mashtool El Souk"
+  ],
+  "Qalyubia": [
+    "Banha",
+    "Qalyub",
+    "Shubra El Kheima",
+    "Khanka",
+    "Khosous",
+    "Toukh",
+    "Qaha",
+    "Shebin El Qanater",
+    "El Khanka",
+    "Mostorod"
+  ],
+  "Kafr El Sheikh": [
+    "Kafr El Sheikh",
+    "Desouk",
+    "Fuwa",
+    "Metoubes",
+    "Baltim",
+    "Sidi Salem",
+    "El Hamool",
+    "Bella",
+    "Qallin"
+  ],
+  "Gharbia": [
+    "Tanta",
+    "Mahalla El Kubra",
+    "Zefta",
+    "El Santa",
+    "Basyoun",
+    "Qutur",
+    "Samannoud",
+    "El Mahalla El Baharya"
+  ],
+  "Monufia": [
+    "Shibin El Kom",
+    "Menouf",
+    "Ashmoun",
+    "Sadat City",
+    "Tala",
+    "Berket El Saba",
+    "Quesna",
+    "Sers El Lyan"
+  ],
+  "Beheira": [
+    "Damanhur",
+    "Kafr El Dawwar",
+    "Rashid (Rosetta)",
+    "Edku",
+    "Abu El Matamir",
+    "Itay El Baroud",
+    "Delengat",
+    "Mahmoudiyah",
+    "Kom Hamada",
+    "Housh Eissa"
+  ],
+  "Damietta": [
+    "Damietta City",
+    "New Damietta",
+    "Ras El Bar",
+    "Faraskur",
+    "Kafr Saad",
+    "Ezbet El Borg",
+    "Zarqa"
+  ],
+  "Port Said": [
+    "Port Fouad",
+    "Arab District",
+    "Dawahy District",
+    "Manakh District",
+    "Ganayen District"
+  ],
+  "Ismailia": [
+    "Ismailia City",
+    "Fayed",
+    "Qantara West",
+    "Qantara East",
+    "Abu Suwir",
+    "Tal El Kebir"
+  ],
+  "Suez": [
+    "Suez City",
+    "Arbaeen",
+    "Faisal",
+    "Ataka",
+    "Ganayen"
+  ],
+  "North Sinai": [
+    "Arish",
+    "Sheikh Zuweid",
+    "Rafah",
+    "Bir El Abd",
+    "Nakhl"
+  ],
+  "South Sinai": [
+    "Sharm El Sheikh",
+    "Dahab",
+    "Nuweiba",
+    "Saint Catherine",
+    "Taba",
+    "Tor Sinai"
+  ],
+  "Red Sea": [
+    "Hurghada",
+    "Safaga",
+    "El Qoseir",
+    "Marsa Alam",
+    "Ras Ghareb"
+  ],
+  "New Valley": [
+    "Kharga",
+    "Dakhla",
+    "Farafra",
+    "Baris",
+    "Balat"
+  ],
+  "Matrouh": [
+    "Marsa Matrouh",
+    "El Alamein",
+    "Siwa",
+    "El Dabaa",
+    "Sidi Barrani",
+    "Negila"
+  ],
+  "Luxor": [
+    "Luxor City",
+    "Karnak",
+    "Thebes (West Bank)",
+    "Armant",
+    "Esna",
+    "Tod"
+  ],
+  "Aswan": [
+    "Aswan City",
+    "Kom Ombo",
+    "Daraw",
+    "Edfu",
+    "Nasr Nubia",
+    "Abu Simbel"
+  ],
+  "Qena": [
+    "Qena City",
+    "Nag Hammadi",
+    "Dishna",
+    "Farshout",
+    "Qift",
+    "Naqada"
+  ],
+  "Sohag": [
+    "Sohag City",
+    "Akhmim",
+    "Girga",
+    "Tahta",
+    "El Balyana",
+    "Dar El Salam"
+  ],
+  "Asyut": [
+    "Asyut City",
+    "Abnoub",
+    "Abu Tig",
+    "El Badari",
+    "El Qusiya",
+    "Manfalut",
+    "Sedfa"
+  ],
+  "Minya": [
+    "Minya City",
+    "Beni Mazar",
+    "Mallawi",
+    "Samalout",
+    "Maghagha",
+    "Abu Qurqas",
+    "Deir Mawas"
+  ],
+  "Beni Suef": [
+    "Beni Suef City",
+    "Nasser",
+    "Ihnasia",
+    "El Wasta",
+    "Biba",
+    "Sumusta"
+  ],
+  "Fayoum": [
+    "Fayoum City",
+    "Tamiya",
+    "Sinnuris",
+    "Ibsheway",
+    "Yousef El Seddik",
+    "Etsa"
+  ]
+}

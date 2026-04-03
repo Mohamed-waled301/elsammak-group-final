@@ -1,4 +1,3 @@
-const path = require('path');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const OtpCode = require('../models/OtpCode');
@@ -9,7 +8,7 @@ const { isConfigured, getMailFrom, waitForInterSendGap, recordSendCompleted } = 
 const { sendOtpEmail } = require('../utils/sendEmail');
 const { signAuthToken, isAuthConfigured } = require('../utils/authToken');
 
-const egyptLocations = require(path.join(__dirname, '..', '..', 'data', 'egyptLocations.json'));
+const egyptLocations = require('../data/egyptLocations.json');
 
 const OTP_SEND_MAX_ATTEMPTS = 3;
 const OTP_SEND_RETRY_MS = 2000;
