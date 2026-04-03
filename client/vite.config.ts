@@ -34,7 +34,8 @@ export default defineConfig(({ mode }) => {
         '@project-data': path.resolve(__dirname, '../data'),
       },
     },
-    base: './',
+    /** Root-relative assets — required for Vercel / React Router (avoid `./` breaking deep routes). */
+    base: '/',
     /** Injects merged VITE_* so the bundle matches root + client/.env (client wins). */
     define: viteEnvDefine,
     envDir: __dirname,
