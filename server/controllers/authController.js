@@ -55,7 +55,7 @@ async function sendOtpEmailViaTransporter(to, code) {
 /**
  * POST /api/auth/register — create client account (email verification required before login).
  */
-async function register(req, res, next) {
+async function register(req, res) {
   try {
     if (!isAuthConfigured()) {
       return res.status(503).json({ success: false, message: 'Server authentication is not configured' });
@@ -88,13 +88,8 @@ async function register(req, res, next) {
       });
     }
 
-    if (!isConfigured()) {
-      return res.status(503).json({ success: false, message: 'Email service is not configured' });
-    }
-
     const existing = await User.findOne({ email });
     let userDoc;
-    let isNewUser = false;
 
     if (existing) {
       if (existing.role === 'admin') {
@@ -118,7 +113,6 @@ async function register(req, res, next) {
       await existing.save();
       userDoc = existing;
     } else {
-      isNewUser = true;
       const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
       userDoc = await User.create({
         email,
@@ -144,18 +138,16 @@ async function register(req, res, next) {
     });
 
     try {
-      await sendOtpEmailViaTransporter(email, otpValue);
-    } catch (lastErr) {
-      await OtpCode.deleteMany({ email, intent: 'register' });
-      if (isNewUser) {
-        await User.deleteOne({ _id: userDoc._id });
+      if (isConfigured()) {
+        await sendOtpEmailViaTransporter(email, otpValue);
       }
-      return mailFailureResponse(res, lastErr);
+    } catch (err) {
+      console.log('Email failed:', err.message);
     }
 
-    return res.json({
+    return res.status(201).json({
       success: true,
-      message: 'Verification code sent to your email.',
+      message: 'User created successfully',
     });
   } catch (err) {
     if (err?.code === 11000 && err.keyPattern && Object.prototype.hasOwnProperty.call(err.keyPattern, 'nationalId')) {
@@ -164,7 +156,11 @@ async function register(req, res, next) {
         message: 'This National ID is already registered.',
       });
     }
-    return next(err);
+    console.error('[auth/register]', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Registration failed. Please try again.',
+    });
   }
 }
 
@@ -323,7 +319,7 @@ async function bootstrapAdmin(req, res, next) {
 /**
  * POST /api/auth/login
  */
-async function login(req, res, next) {
+async function login(req, res) {
   const debugLogin = process.env.DEBUG_LOGIN === '1';
   console.log('LOGIN ROUTE HIT');
   try {
@@ -336,14 +332,12 @@ async function login(req, res, next) {
       .toLowerCase();
     const rawPassword = String(req.body?.password ?? '');
     const password = rawPassword.trim();
-    const adminMode = req.body?.mode === 'admin';
 
     if (debugLogin) {
       console.log('[auth/login DEBUG] inputs:', {
         email,
         passwordLength: password.length,
         rawLength: rawPassword.length,
-        adminMode,
       });
     }
 
@@ -351,34 +345,13 @@ async function login(req, res, next) {
       return res.status(400).json({ success: false, message: 'Email and password are required' });
     }
 
-    if (!adminMode && (await emailBelongsToAdmin(email))) {
-      return res.status(403).json({
-        success: false,
-        message: 'Use the Admin tab to sign in with this account.',
-      });
-    }
-
     const user = await User.findOne({ email });
 
     if (!user) {
       if (debugLogin) {
-        console.log('[auth/login DEBUG] no user for email', { email, adminMode });
+        console.log('[auth/login DEBUG] no user for email', { email });
       }
       return res.status(401).json({ success: false, message: 'Invalid email or password.' });
-    }
-
-    if (adminMode && user.role !== 'admin') {
-      return res.status(403).json({
-        success: false,
-        message: 'This account is not an administrator.',
-      });
-    }
-
-    if (!adminMode && user.role === 'admin') {
-      return res.status(403).json({
-        success: false,
-        message: 'Use the Admin tab to sign in as administrator.',
-      });
     }
 
     if (!user.passwordHash) {
@@ -406,16 +379,9 @@ async function login(req, res, next) {
 
     if (!passwordOk) {
       if (debugLogin) {
-        console.log('[auth/login DEBUG] password rejected', { email, adminMode, userRole: user.role });
+        console.log('[auth/login DEBUG] password rejected', { email, userRole: user.role });
       }
       return res.status(401).json({ success: false, message: 'Invalid email or password.' });
-    }
-
-    if (!user.emailVerified && user.role !== 'admin') {
-      return res.status(403).json({
-        success: false,
-        message: 'Please verify your email using the code we sent.',
-      });
     }
 
     const token = signAuthToken(user);
@@ -433,11 +399,15 @@ async function login(req, res, next) {
         governorate: user.governorate,
         city: user.city,
         role: user.role,
+        emailVerified: Boolean(user.emailVerified),
       },
     });
   } catch (err) {
     console.log('LOGIN ERROR:', err.message);
-    return next(err);
+    return res.status(500).json({
+      success: false,
+      message: 'Login failed. Please try again.',
+    });
   }
 }
 
