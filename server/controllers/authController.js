@@ -351,15 +351,11 @@ async function login(req, res) {
       if (debugLogin) {
         console.log('[auth/login DEBUG] no user for email', { email });
       }
-      return res.status(401).json({ success: false, message: 'Invalid email or password.' });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     if (!user.passwordHash) {
-      return res.status(401).json({
-        success: false,
-        message:
-          'No password on file. Use Forgot password on the sign-in page to set one.',
-      });
+      return res.status(401).json({ message: 'Wrong password' });
     }
 
     if (debugLogin && user.passwordHash) {
@@ -381,7 +377,7 @@ async function login(req, res) {
       if (debugLogin) {
         console.log('[auth/login DEBUG] password rejected', { email, userRole: user.role });
       }
-      return res.status(401).json({ success: false, message: 'Invalid email or password.' });
+      return res.status(401).json({ message: 'Wrong password' });
     }
 
     const token = signAuthToken(user);
