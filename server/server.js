@@ -28,7 +28,9 @@ if (!isAuthConfigured()) {
 }
 const app = express();
 
-// CORS must run before routes (including /api/auth/*)
+// CORS must run before routes (including /api/auth/*).
+// Allows https://elsammak-group-final-e1du.vercel.app + local dev; uses `cors` (see ./config/cors.js).
+// For open testing only: CORS_ORIGIN=* in env (credentials disabled). Optional: app.use(cors());
 app.use(createCorsMiddleware());
 app.use(express.json({ limit: '512kb' }));
 
